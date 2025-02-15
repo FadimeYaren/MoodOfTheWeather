@@ -2,15 +2,20 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     background-color: #f4f4f4;
+    margin: 0;
+    overflow: hidden;
+    height: 100vh;
 }
 
 .container {
-    margin-top: 50px;
-    background: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.8);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    display: inline-block;
 }
 
 input {
@@ -35,4 +40,23 @@ button:hover {
 #weatherResult {
     margin-top: 20px;
     font-size: 18px;
+}
+
+/* 360 derece sahne için */
+#scene-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+}
+
+/* Hava durumu efektleri */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    pointer-events: none;
 }

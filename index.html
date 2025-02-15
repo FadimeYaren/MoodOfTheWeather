@@ -5,14 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hava Durumu Uygulaması</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
+    <div id="scene-container"></div> <!-- 360 Derece Manzara İçin -->
     <div class="container">
         <h1>Hava Durumu</h1>
         <input type="text" id="cityInput" placeholder="Şehir Girin">
         <button onclick="getWeather()">Sorgula</button>
         <div id="weatherResult"></div>
     </div>
+    <canvas id="weatherCanvas"></canvas> <!-- Hava Durumu Efektleri İçin -->
+    
     <script src="config.js"></script>
     <script src="script.js"></script>
 </body>
