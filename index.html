@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mood of the Weather</title>
+
+  <link rel="stylesheet" href="styles.css?v=10" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+</head>
+<body>
+  <!-- 360° arka plan sahnesi -->
+  <div id="scene-container"></div>
+
+  <!-- Hava kartı (yeni UI) -->
+  <div class="weather-card">
+    <div class="search-bar">
+        <input type="text" id="cityInput" placeholder="Şehir Girin" />
+        <button type="button" onclick="getWeather()">Sorgula</button>
+    </div>
+
+    <div id="weatherDisplay" class="hidden">
+        <div class="weather-layout">
+        <!-- Sol uzun panel -->
+        <section class="panel panel-left">
+            <h3>Detaylar</h3>
+            <ul class="kv">
+            <li>💧 Nem <strong id="humidity">—</strong></li>
+            <li>🧭 Basınç <strong id="pressure">—</strong></li>
+            </ul>
+        </section>
+
+        <!-- Orta büyük panel -->
+        <section class="panel panel-main">
+            <h2 id="cityName">—</h2>
+            <div class="emoji" id="weatherEmoji">⛅️</div>
+            <div class="temp" id="tempValue">—</div>
+            <div class="desc" id="weatherDesc">—</div>
+        </section>
+
+        <!-- Sağ uzun panel -->
+        <section class="panel panel-right">
+            <h3>Güneş</h3>
+            <ul class="kv">
+            <li>🌅 Doğum <strong id="sunrise">—</strong></li>
+            <li>🌇 Batım <strong id="sunset">—</strong></li>
+            </ul>
+        </section>
+
+        <!-- Alt iki küçük panel -->
+        <section class="panel panel-bottom panel-b1">
+            🥵 Hissedilen <strong id="feelsLike">—</strong>
+        </section>
+        <section class="panel panel-bottom panel-b2">
+            💨 Rüzgâr <strong id="wind">—</strong>
+        </section>
+        </div>
+    </div>
+    </div>
+
+
+  <!-- Yağmur/Kar gibi 2D efektler -->
+  <canvas id="weatherCanvas" aria-hidden="true"></canvas>
+
+  <noscript>Bu sayfa JavaScript gerektirir.</noscript>
+
+  <!-- API KEY ve app kodları -->
+  <script src="config.js?v=10" defer></script>
+  <script src="script.js?v=10" defer></script>
+
+  <!-- Enter ile arama (küçük UX dokunuşu) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const input = document.getElementById('cityInput');
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') getWeather();
+      });
+    });
+  </script>
+</body>
+</html>

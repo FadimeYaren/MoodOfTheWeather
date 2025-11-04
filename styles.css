@@ -1,0 +1,316 @@
+/* ——— Google Font ——— */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* ——— Temel ——— */
+:root{
+  --card-bg: rgba(255,255,255,0.18);
+  --chip-bg: rgba(255,255,255,0.15);
+  --text: #fff;
+  --shadow-strong: 0 24px 80px rgba(0,0,0,0.45);
+  --shadow-soft: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  overflow: hidden;
+  color: var(--text);
+  background: radial-gradient(circle at center, #141414 0%, #000 100%);
+  text-align: center;
+}
+
+/* ——— Three.js sahnesi + arkaya hafif cam blur ——— */
+#scene-container {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+#scene-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(1.2px) brightness(1.05) contrast(1.25) saturate(110%);
+  -webkit-backdrop-filter: blur(1.2px) brightness(1.05) contrast(1.25) saturate(110%);
+  pointer-events: none;
+}
+
+/* 2D efektler (yağmur/kar) sahnenin üstünde, kartın altında */
+canvas#weatherCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ——— Ana Hava Kartı ——— */
+/* ——— Ana Hava Kartı ——— */
+.weather-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  /* Sabit boyut (masaüstü) */
+  width: 800px;
+  height: 550px;
+
+  /* Düzen */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;     /* ⬅️ Artık üstten başla */
+  gap: 18px;                       /* öğeler arası dikey boşluk */
+
+  padding: 28px 40px;              /* üst ped'i biraz küçülttük */
+  border-radius: 28px;
+  background: var(--card-bg);
+  color: var(--text);
+  text-align: center;
+  box-shadow: var(--shadow-strong);
+  border: 1px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  z-index: 3;
+
+  /* İçerik taşarsa hafif scroll (küçük ekranlarda işe yarar) */
+  overflow: hidden;                /* istersen auto yapabilirsin */
+}
+
+
+@media (max-width: 860px) {
+  .weather-card {
+    width: 92vw;
+    height: auto;
+    padding: 30px 24px;
+  }
+}
+
+
+/* ——— Arama çubuğu ——— */
+.search-bar {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  flex: 1;
+  max-width: 440px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: none;
+  outline: none;
+  background: rgba(255,255,255,0.92);
+  color: #111;
+  font-size: 16px;
+}
+
+.search-bar button {
+  background: linear-gradient(135deg, #007aff, #0052ff);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 22px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.2s ease;
+  box-shadow: 0 6px 16px rgba(46,96,255,0.35);
+}
+.search-bar button:hover { filter: brightness(1.08); }
+.search-bar button:active { transform: scale(0.97); }
+
+/* ——— Konum / Başlık ——— */
+.location h2 {
+  margin: 10px 0 14px;
+  font-size: clamp(24px, 4vw, 40px);
+  font-weight: 600;
+  color: #fff;
+}
+
+/* ——— Ana bilgi: emoji + sıcaklık + açıklama ——— */
+.main-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.emoji {
+  font-size: 72px;
+  animation: pop 0.6s ease;
+}
+
+.temp {
+  font-size: clamp(44px, 6vw, 56px);
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.desc {
+  font-size: 18px;
+  text-transform: capitalize;
+  opacity: 0.9;
+  margin-top: 4px;
+}
+/* GRID yerleşim: 3 sütun x 2 satır
+   [left][main][right]
+   [left][b1+b2][right]
+*/
+.weather-layout {
+  display: grid;
+  grid-template-columns: 180px 1fr 180px;
+  grid-template-rows: 240px 140px;
+  gap: 20px;
+  height: auto;
+}
+
+
+/* Paneller – cam görünümlü küçük kartlar */
+.panel {
+  background: linear-gradient(145deg, rgba(255,255,255,0.18), rgba(255,255,255,0.05));
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  padding: 16px 18px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.panel:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.3);
+}
+/* GRID: 3 sütun x 2 satır (üst: detaylar, ana, güneş — alt: hissedilen, rüzgâr aynı hizaya) */
+.weather-layout {
+  display: grid;
+  grid-template-columns: 180px 1fr 180px;
+  grid-template-rows: 240px 140px;
+  gap: 20px;
+  height: auto;
+}
+
+/* Detaylar ve Güneş kareye yakın olsun */
+.panel-left,
+.panel-right {
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  padding: 18px;
+  height: 240px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Ana panel ortada daha yüksek kalacak */
+.panel-main {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+}
+
+/* Sol (detaylar) */
+.panel-left {
+  grid-column: 1;
+  grid-row: 1;
+}
+.panel-left h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* Sağ (güneş) */
+.panel-right {
+  grid-column: 3;
+  grid-row: 1;
+}
+.panel-right h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* Alt küçük kutular (detaylar ve güneşin altına hizalanıyor) */
+.panel-b1 {
+  grid-column: 1;
+  grid-row: 2;
+}
+.panel-b2 {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.panel-bottom {
+  width: 180px;
+  height: 140px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.14);
+  border: 1px solid rgba(255,255,255,0.22);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(10px) saturate(150%);
+  -webkit-backdrop-filter: blur(10px) saturate(150%);
+}
+
+/* Liste görünümü */
+.kv {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.kv li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+}
+
+/* Mobil düzen */
+@media (max-width: 860px) {
+  .weather-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+  .panel-left, .panel-main, .panel-right, .panel-b1, .panel-b2 {
+    grid-column: 1;
+    grid-row: auto;
+    width: 100%;
+    height: auto;
+  }
+  .panel-bottom {
+    height: 120px;
+  }
+}
