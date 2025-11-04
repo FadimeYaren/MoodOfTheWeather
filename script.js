@@ -148,6 +148,10 @@ async function getWeather() {
     // Görünür hale getir
     document.getElementById("weatherDisplay").classList.remove("hidden");
 
+    // 🎬 Arama barını yukarı taşı, grid'i netleştir
+    document.body.classList.remove('intro');
+    document.body.classList.add('results');
+
     // Efektleri güncelle
     updateWeatherEffects(description);
 
@@ -155,6 +159,19 @@ async function getWeather() {
     console.error("Hava durumu alınırken hata oluştu!", error);
   }
 }
+
+
+
+// Input temizlenirse tekrar intro moduna dön
+const cityInput = document.getElementById('cityInput');
+cityInput.addEventListener('input', () => {
+  if (cityInput.value.trim() === '') {
+    document.body.classList.add('intro');
+    document.body.classList.remove('results');
+  }
+});
+
+
 
 
 function stopWeatherEffect() {
@@ -332,3 +349,9 @@ function animateScene() {
 }
 
 initScene();
+
+
+// Sayfa açıldığında arama barı ortada olsun (intro durumu)
+document.addEventListener('DOMContentLoaded', () => {
+  document.body.classList.add('intro');
+});

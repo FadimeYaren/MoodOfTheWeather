@@ -192,14 +192,7 @@ canvas#weatherCanvas {
   transform: translateY(-3px);
   box-shadow: 0 8px 28px rgba(0,0,0,0.3);
 }
-/* GRID: 3 sütun x 2 satır (üst: detaylar, ana, güneş — alt: hissedilen, rüzgâr aynı hizaya) */
-.weather-layout {
-  display: grid;
-  grid-template-columns: 180px 1fr 180px;
-  grid-template-rows: 240px 140px;
-  gap: 20px;
-  height: auto;
-}
+
 
 /* Detaylar ve Güneş kareye yakın olsun */
 .panel-left,
@@ -297,6 +290,61 @@ canvas#weatherCanvas {
   justify-content: space-between;
   font-size: 15px;
 }
+
+
+/* ====== STATE KONTROL ====== */
+/* Arama bar yukarıdayken grid biraz aşağı insin */
+.results .weather-layout {
+  margin-top: 60px;   /* arama bar ile grid arasına boşluk */
+  transition: margin-top 0.45s ease;
+}
+
+/* Arama bar ortadayken (intro) grid ortada kalacak */
+.intro .weather-layout {
+    filter: blur(8px) brightness(0.85);
+    margin-top: 50px;
+    transition: margin-top 0.45s ease;
+}
+
+/* Arama barını iki konum arasında animasyonla gezdirelim */
+.search-bar {
+  position: absolute;               /* kart içinde katman */
+  z-index: 5;
+  left: 50%;
+  transition: top .45s cubic-bezier(.2,.8,.2,1),
+              transform .45s cubic-bezier(.2,.8,.2,1);
+}
+
+/* Intro: tam ortada ve büyük */
+.intro .search-bar {
+  top: 50%;
+  transform: translate(-50%, -50%) scale(1.25);
+}
+
+/* Results: kartın üst orta kısmına dock */
+.results .search-bar {
+  top: 22px;                        /* kart üstüne yapışık */
+  transform: translate(-50%, 0) scale(1);
+}
+
+/* Arka planı hafif karartan bir film katmanı (opsiyonel) */
+.intro .weather-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  background: rgba(0,0,0,0.12);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Arama barının input’u intro’da geniş olsun */
+.intro .search-bar input { max-width: 520px; padding: 18px 22px; font-size: 18px; }
+
+
+
+
+
 
 /* Mobil düzen */
 @media (max-width: 860px) {
